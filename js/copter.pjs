@@ -1,0 +1,47 @@
+boolean game=true;
+//b imagen del helicoptero
+PImage b;
+int contador=0;
+//Matriz de las paredes y la columna
+int [][] pared= new int[3][70];
+//Inicializo las paredes
+for(int i=0;i<pared[0].length();i++){
+        pared[0][i]=20;
+        pared[1][i]=20;
+    }
+void setup(){
+    size(700,400);
+    frameRate(30);
+    b=loadImage("image/copter.png");
+}
+void draw(){
+    background(0, 191, 255);
+    fill(160, 82, 45);
+    noStroke();
+    level();
+    for(int i=0;i<pared[0].length;i++){
+        rect(10*i,0,10,pared[0][i]);
+        rect(10*i,400-pared[1][i],10,pared[1][i]);
+    }
+    image(b,mouseX-25,mouseY-25,50,50);
+    contador++;
+}
+function level(){
+    if((contador/30)<30){
+        level1();
+    }
+}
+function level1(){
+    if(contador%15==0){
+        var aleatorio = Math.floor(Math.random()*41)
+        pared[0][69]=aleatorio;
+        pared[1][69]=aleatorio;
+        for(int i=0;i<69;i++){
+            pared[0][i]=pared[0][i+1];
+            pared[1][i]=pared[1][i+1];
+        }
+    }
+}
+
+
+
