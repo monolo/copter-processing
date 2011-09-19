@@ -1,7 +1,6 @@
-boolean game=true;
+boolean game=false;
 //b imagen del helicoptero
 PImage b;
-int contador=0;
 //Matriz de las paredes y la columna
 int [][] pared= new int[3][70];
 //Inicializo las paredes
@@ -14,26 +13,52 @@ void setup(){
     frameRate(30);
     b=loadImage("image/copter.png");
 }
+setTimeout(function(){game=true},3000);
 void draw(){
-    background(0, 191, 255);
-    fill(160, 82, 45);
-    noStroke();
-    level();
-    for(int i=0;i<pared[0].length;i++){
-        rect(10*i,0,10,pared[0][i]);
-        rect(10*i,400-pared[1][i],10,pared[1][i]);
+    if(game==false){
+        background(125);
+        
+        
     }
-    image(b,mouseX-25,mouseY-25,50,50);
-    contador++;
+    else{
+        noCursor();
+        background(0, 191, 255);
+        fill(160, 82, 45);
+        noStroke();
+        level();
+        for(int i=0;i<pared[0].length;i++){
+            rect(10*i,0,10,pared[0][i]);
+            rect(10*i,400-pared[1][i],10,pared[1][i]);
+        }
+        image(b,mouseX-25,mouseY-25,50,50);
+        games();
+    }
+}
+function games(){
+    for(int i=0;i<70;i++){
+        if(((mouseY-14)<pared[0][i])&&((i*10)>(mouseX-24))&&(((i+1)*10)<(mouseX+24))){
+            game=false;
+        }
+        if(((mouseY+14)>(400-pared[1][i]))&&((i*10)>(mouseX-24))&&(((i+1)*10)<(mouseX+24))){
+            game=false;
+        }
+    }
 }
 function level(){
-    if((contador/30)<30){
+    if((frameCount/30)<30){
         level1();
     }
 }
 function level1(){
-    if(contador%15==0){
-        var aleatorio = Math.floor(Math.random()*41)
+    if(frameCount%15==0){
+        var aleatorio;
+        var anterior = pared[0][69];
+        if(Math.random()>0.5){
+            aleatorio= anterior+Math.ceil(Math.random()*2);
+        }
+        else{
+            aleatorio= anterior-Math.ceil(Math.random()*2);
+        }
         pared[0][69]=aleatorio;
         pared[1][69]=aleatorio;
         for(int i=0;i<69;i++){
