@@ -1,103 +1,130 @@
-float velocidad=2;
+int velocidad=2;
+int fotograma=30;
 boolean game=false;
 //b imagen del helicoptero
 PImage b;
-//Matriz de las paredes y la columna
-int [][] pared= new int[2][70];
-int [] columna=new int[2][2];
-//Inicializo las paredes
+
+float velocidad=2;
+
+int Ncolumnas = 2;
+
+
+//Matriz de las paredes
+int [][] pared= new int[2][35];
 for(int i=0;i<pared[0].length();i++){
         pared[0][i]=20;
         pared[1][i]=20;
 }
 
-//Inicializo la columna
-for(int i=0;i<columna[0].length();i++){
-    columna[i][1]=pared[0][69]+Math.ceil(Math.random()*(400-70-pared[0][69]-pared[0][69]-70));
+//columna
+int [][] columna=new int[7][2];
+for(int i=1;i<7;i++){
+    columna[i][0]=-20;
 }
-columna[0][0]=0;
-columna[1][0]=350;
+columna[0][0]=700;
 
 //setup
 void setup(){
     size(700,400);
-    frameRate(30);
+    frameRate(fotograma);
     b=loadImage("image/copter.png");
 }
 setTimeout(function(){game=true},3000);
 void draw(){
     if(game==false){
         background(0);
+        frameCount=0;
     }
     else{
+        frameRate(fotograma);
         noCursor();
         background(0, 191, 255);
-        fill(160, 82, 45);
-        noStroke();
         level();
-        for(int i=0;i<pared[0].length;i++){
-            rect(10*i,0,10,pared[0][i]);
-            rect(10*i,400-pared[1][i],10,pared[1][i]);
-        }
+        level1();
+        dibujo();
         image(b,mouseX-25,mouseY-25,50,50);
-        columnas();
         games();
+    }
+}
+
+//dibujo las paredes y las columnas
+function dibujo(){
+    fill(160, 82, 45);
+    noStroke();
+    for(int i=0;i<pared[0].length;i++){
+        rect(20*i,0,20,pared[0][i]);
+        rect(20*i,400-pared[1][i],20,pared[1][i]);
+    }
+    for(int i=0;i<Ncolumnas;i++){
+        rect(columna[i][0],columna[i][1],20,70);
     }
 }
 
 //detecta cuando le pegas a las paredes
 function games(){
-    for(int i=0;i<70;i++){
+    for(int i=0;i<pared[0].length();i++){
         //pared superior
-        if(((mouseY-14)<pared[0][i])&&((i*10)>(mouseX-24))&&(((i+1)*10)<(mouseX+24))){
+        if(((mouseY-14)<pared[0][i])&&((i*20)>(mouseX-24))&&(((i+1)*20)<(mouseX+24))){
             game=false;
         }
         //pared inferior
-        if(((mouseY+15)>=(400-pared[1][i]))&&((i*10)>(mouseX-24))&&(((i+1)*10)<(mouseX+24))){
+        if(((mouseY+15)>=(400-pared[1][i]))&&((i*20)>(mouseX-24))&&(((i+1)*20)<(mouseX+24))){
             game=false;
         }
         //columna central
-        if(((mouseY+15)>columna[0][1])&&((mouseY-15)<(columna[0][1]+70))&&((mouseX+24)>(700-columna[0][0]-20))&&((mouseX-24)<(700-columna[0][0]))){
-            game=false;                
-        }
-        if(((mouseY+15)>columna[1][1])&&((mouseY-15)<(columna[1][1]+70))&&((mouseX+24)>(700-columna[1][0]-20))&&((mouseX-24)<(700-columna[1][0]))){
-            game=false;                
+        for(int j=0;j<Ncolumnas;j++){
+            if(((mouseY+15)>columna[j][1])&&((mouseY-15)<(columna[j][1]+70))&&((mouseX+24)>columna[j][0])&&((mouseX-24)<columna[j][0])){
+                game=false;                
+            }
         }
     }
 }
 
 function level(){
-    if((frameCount/30)<30){
-        level1();
+    if((velocidad>1)&&(frameCount%(30*20)==0)){
+        velocidad=velocidad-0.1;
     }
+    else if(frameCount%(30*20)==0){
+        
+    }
+    if(Ncolumnas<7&&frameCount%(30*30)==0){
+        Ncolumnas=Ncolumnas+1;
+    }
+    if(frameCount%(30*15)==0&&Math.random()<0.5){
+        pared[0][pared[0].length()-1]=pared[0][pared[0].length()-1]+5;
+    }
+    else if(frameCount%(30*15)==0){
+        pared[1][pared[0].length()-1]=pared[1][pared[0].length()-1]+5;
+    }
+    fill(255);
+    text(velocidad+"  "+Ncolumnas,50,50,100,100);
 }
 function level1(){
-    var aleatorio=Math.ceil(Math.random()*2);
-    if((Math.random()>0.5&&pared[1][69]>1)||(pared[0][69]<2)){
-        pared[0][69]=pared[0][69]+aleatorio;
-        pared[1][69]=pared[1][69]-aleatorio;
-    }
-    else{
-        pared[0][69]=pared[0][69]-aleatorio;
-        pared[1][69]=pared[1][69]+aleatorio;
-    }
-    for(int i=0;i<(pared[0].length()-1);i++){
-        pared[0][i]=pared[0][i+1];
-        pared[1][i]=pared[1][i+1];
-    } 
-}
-function columnas(){
-    rect(700-columna[0][0]-20,columna[0][1],20,70);
-    rect(700-columna[1][0]-20,columna[1][1],20,70);
-    for(int i=0; i<columna[0].length();i++){
-        if(columna[i][0]==700){
-            columna[i][1]=pared[0][69]+Math.ceil(Math.random()*(400-70-pared[0][69]-pared[0][69]-70));
-            columna[i][0]=0;
+    if(frameCount%Math.round(velocidad)==0){
+        var aleatorio=Math.ceil(Math.random()*2);
+        if((Math.random()>=0.5&&pared[1][pared[0].length()-1]>1)||(pared[0][pared[0].length()-1]<2)){
+            pared[0][pared[0].length()-1]=pared[0][pared[0].length()-1]+aleatorio;
+            pared[1][pared[0].length()-1]=pared[1][pared[0].length()-1]-aleatorio;
         }
-        columna[i][0]=columna[i][0]+10;
+        else{
+            pared[0][pared[0].length()-1]=pared[0][pared[0].length()-1]-aleatorio;
+            pared[1][pared[0].length()-1]=pared[1][pared[0].length()-1]+aleatorio;
+        }
+        for(int i=0;i<(pared[0].length()-1);i++){
+            pared[0][i]=pared[0][i+1];
+            pared[1][i]=pared[1][i+1];
+        }
+        for(int i=0;i<Ncolumnas;i++){
+            if((columna[i][0]>=700)&&(columna[i][0]<720)){
+                columna[i][1]=pared[0][pared[0].length()-1]+Math.ceil(Math.random()*(400-70-pared[0][pared[0].length()-1]-pared[0][pared[0].length()-1]));
+            }
+            if(columna[i][0]<=-20&&i!=0){
+                columna[i][0]=columna[i-1][0]+((Ncolumnas-1)*20)+(Math.ceil(700/Ncolumnas))+30;
+            }
+            else if(columna[i][0]<=-20){
+                columna[i][0]=columna[Ncolumnas-1][0]+((Ncolumnas-1)*20)+(Math.ceil(700/Ncolumnas))+30;
+            }
+            columna[i][0]=columna[i][0]-20;
+        }
     }
 }
-
-
-
-
